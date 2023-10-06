@@ -40,8 +40,34 @@ const getByIdFromDB = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await StudentService.updateIntoDB(id, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Update Student Information Successfully',
+    data: result,
+  });
+});
+
+const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await StudentService.deleteFromDB(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Delete Student Information Successfully',
+    data: result,
+  });
+});
+
 export const StudentController = {
   insertIntoDB,
   getAllFromDB,
   getByIdFromDB,
+  updateIntoDB,
+  deleteFromDB,
 };

@@ -16,7 +16,7 @@ const update = z.object({
   }),
 });
 
-export const AcademicFacultyValidation = {
+export const BuildingValidations = {
   create,
   update,
 };
