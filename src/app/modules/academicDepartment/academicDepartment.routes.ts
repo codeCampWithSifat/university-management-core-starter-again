@@ -12,6 +12,7 @@ router.get('/:id', AcademicDepartmentController.getByIdFromDB);
 
 router.post(
   '/',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   validateRequest(AcademicDepartmentValidation.create),
   AcademicDepartmentController.insertIntoDB
 );
@@ -25,6 +26,7 @@ router.patch(
 
 router.delete(
   '/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   AcademicDepartmentController.deleteFromDB
 );
