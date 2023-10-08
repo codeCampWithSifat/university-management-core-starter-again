@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import { Prisma } from '@prisma/client';
 import { IGenericErrorMessage } from '../interfaces/error';
 
-const handleCastError = (error: mongoose.Error.CastError) => {
+const handleCastError = (error: Prisma.PrismaClientKnownRequestError) => {
   const errors: IGenericErrorMessage[] = [
     {
-      path: error.path,
-      message: 'Invalid Id',
+      path: '',
+      message: error.message,
     },
   ];
 
