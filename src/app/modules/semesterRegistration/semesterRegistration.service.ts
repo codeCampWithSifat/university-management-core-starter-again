@@ -3,6 +3,7 @@ import {
   Prisma,
   SemesterRegistration,
   SemesterRegistrationStatus,
+  StudentSemesterRegistration,
 } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
@@ -190,10 +191,81 @@ const deleteIdFromDB = async (id: string): Promise<SemesterRegistration> => {
   return result;
 };
 
+const startMyRegistration = async (
+  authUserId: string
+): Promise<{
+  semesterRegistration: SemesterRegistration | null | undefined;
+  studentSemesterRegistration: StudentSemesterRegistration | null | undefined;
+}> => {
+  const studentInfo = await prisma.student.findFirst({
+    where: {
+      studentId: authUserId,
+    },
+  });
+
+  if (!studentInfo) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Student Not Found');
+  }
+
+  const semesterRegistrationInfo = await prisma.semesterRegistration.findFirst({
+    where: {
+      status: {
+        in: [
+          SemesterRegistrationStatus.UPCOMING,
+          SemesterRegistrationStatus.ONGOING,
+        ],
+      },
+    },
+  });
+
+  if (
+    semesterRegistrationInfo?.status === SemesterRegistrationStatus.UPCOMING
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Registration Is Not Started Yet'
+    );
+  }
+
+  let studentRegistration = await prisma.studentSemesterRegistration.findFirst({
+    where: {
+      student: {
+        id: studentInfo?.id,
+      },
+      semesterRegistration: {
+        id: semesterRegistrationInfo?.id,
+      },
+    },
+  });
+
+  if (!studentRegistration) {
+    studentRegistration = await prisma.studentSemesterRegistration.create({
+      data: {
+        student: {
+          connect: {
+            id: studentInfo?.id,
+          },
+        },
+        semesterRegistration: {
+          connect: {
+            id: semesterRegistrationInfo?.id,
+          },
+        },
+      },
+    });
+  }
+
+  return {
+    semesterRegistration: semesterRegistrationInfo,
+    studentSemesterRegistration: studentRegistration,
+  };
+};
+
 export const SemesterRegistrationService = {
   insertIntoDB,
   getIdFromDB,
   updateOneFromDB,
   deleteIdFromDB,
   getAllFromDB,
+  startMyRegistration,
 };

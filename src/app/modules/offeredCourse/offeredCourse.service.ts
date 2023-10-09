@@ -44,6 +44,7 @@ const insertIntoDB = async (
         },
       });
       result.push(insertOfferedCourse);
+      // return insertOfferedCourse;
     }
   });
   return result;
@@ -88,6 +89,24 @@ const getAllFromDB = async (
       }),
     });
   }
+
+  //  if(Object.keys(filterData).length > 0) {
+  //   andConditions.push({
+  //     AND : Object.keys(filterData).map((key) => {
+  //       if(offeredCourseRelationalFields.includes(key)) {
+  //         return {
+  //           [offeredCourseRelationalFieldsMapper[key]] : {id: (filterData as any)[key]}
+  //         }
+  //       } else {
+  //         return {
+  //           [key] : {
+  //             equals : (filterData as any)[key]
+  //           }
+  //         }
+  //       }
+  //     })
+  //   })
+  //  }
 
   const whereConditions: Prisma.OfferedCourseWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
